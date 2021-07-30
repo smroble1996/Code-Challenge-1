@@ -1,25 +1,52 @@
-// write your code here
-// write your code here
-const fgImage = document.getElementById('fg-image');
+const imageUrl = 'http://localhost:3000/images/1';
+const fgTitle = el('fg-title');
+const fgImage = el('fg-image');
+const fgLikes = el('fg-likes');
+const fgComments = el('fg-comments');
+const likeButton = el('like-button');
+const commentForm = el('fg-comment-form');
 
-fetch('http://localhost:3000')
-    // 'Content-Type' : 'db.json',
-    // 'Accept' : 'db.json'
-    .then((res) => res.json())
-    .then(handleData);
+let likes = 0;
 
-    function handleData(dogs){
-        dogs.forEach(images => {
-            console.log(images.id)
-        const fgSpan = document.createElement('span');
-            fgSpan.innerText = images.id
-            fgImage.append(fgSpan);
-            
+likeButton.addEventListener("click", () => {
+    likes++;
+    renderLikes();
+});
 
-        });
-    }
-    function addComents(){
-        dogs.forEach(comments => {
-            console.log(comments.id)
-        });
-    }
+commentForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    addComment(e.target.comment.value);
+    e.target.comment.value = '';
+});
+
+fetch(imageUrl)
+    .then((res)=> res.json())
+    .then(renderImage);
+
+
+function renderImage(data){
+    fgTitle.innerText = data.title;
+    fgImage.src = data.image;
+    likes = data.likes;
+    renderLikes();
+    setComments(data.comments);
+}
+
+function renderLikes() {
+fgLikes.innerText = `${likes} likes`;
+}
+
+function setComments(comments) {
+    fgComments.innerHTML = '';
+    comments.forEach(comment => addComment(comment.content));   
+}
+
+function addComment(comment){
+    const li = document.createElement('li');
+    li.innerText = comment;
+    fgComments.append(li);
+}
+
+function el(id){
+    return document.getElementById(id);
+}
